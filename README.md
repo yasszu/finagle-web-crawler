@@ -1,10 +1,10 @@
-# REST APIs with Finagle
+# Web Crawler
 ## Getting Started
 
 * Create a Database (MySQL)  
 
 ```sql
-CREATE SCHEMA IF NOT EXISTS `web_clawler` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE SCHEMA IF NOT EXISTS `web_crawler` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 ```
 
 * Start server

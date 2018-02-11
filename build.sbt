@@ -1,4 +1,4 @@
-name := "web-clawler"
+name := "web-crawler"
 
 version := "1.0"
 
