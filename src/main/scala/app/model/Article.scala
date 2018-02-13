@@ -26,23 +26,7 @@ object Article {
     }
   }
 
-  def findAll(orgId: Int)(implicit client: Client): Future[Seq[Article]] = {
-    val sql = s"SELECT * FROM articles a WHERE a.del_flg = 0 AND a.organization_id = $orgId ORDER BY a.id DESC LIMIT 0, 100"
-    client.select(sql) { row =>
-      val LongValue(id) = row("id").get
-      val published = getStringValue(row, "published")
-      val title = getStringValue(row, "title")
-      val content = getStringValue(row, "content")
-      val thumbnail = getStringValue(row, "thumbnail")
-      val link = getStringValue(row, "link")
-      val LongValue(organizationId) = row("organization_id").get
-      Article(Some(id), published, title, content, thumbnail, link, organizationId)
-    } onFailure { throwable =>
-      throwable.printStackTrace()
-    }
-  }
-
-  def findAll(orgId: Int, limit: Int, offset: Int)(implicit client: Client): Future[Seq[Article]] = {
+  def findAll(orgId: Int, limit: Int = 100, offset: Int = 0)(implicit client: Client): Future[Seq[Article]] = {
     val sql = s"SELECT * FROM articles a WHERE a.del_flg = 0 AND a.organization_id = $orgId ORDER BY a.id DESC LIMIT $offset, $limit"
     client.select(sql) { row =>
       val LongValue(id) = row("id").get

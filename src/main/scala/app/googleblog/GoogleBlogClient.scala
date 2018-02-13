@@ -53,5 +53,7 @@ class GoogleBlogClient extends Service[Request, Response] {
 }
 
 object GoogleBlogClient {
+
   def apply(): GoogleBlogClient = new GoogleBlogClient()
+
 }

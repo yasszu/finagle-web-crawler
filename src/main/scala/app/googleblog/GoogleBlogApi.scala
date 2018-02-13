@@ -114,5 +114,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
 }
 
 object GoogleBlogApi {
+
   def apply()(implicit mysql: Client): GoogleBlogApi = new GoogleBlogApi()
+
 }
