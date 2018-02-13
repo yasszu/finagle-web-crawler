@@ -13,6 +13,18 @@ CREATE SCHEMA IF NOT EXISTS `web_crawler` DEFAULT CHARACTER SET utf8mb4 COLLATE 
 $ sbt 'run-main app.api.ApiServer'
 ```
     
+## Deploy application
+* Create a JAR file
+```
+$ sbt assembly
+
+```
+
+* Run process
+```
+$ java -jar target/scala-2.12/web-crawler-assembly-1.0.jar &
+```
+    
 ## Feed
 ### GET feed/developers/googleblog
 #### Example

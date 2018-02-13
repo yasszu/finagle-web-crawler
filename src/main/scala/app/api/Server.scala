@@ -12,7 +12,7 @@ import com.typesafe.config.ConfigFactory
 import io.circe.generic.auto._
 import io.finch.circe._
 
-object ApiServer extends TwitterServer {
+object Server extends TwitterServer {
 
   override def failfastOnFlagsNotParsed: Boolean = true
 
