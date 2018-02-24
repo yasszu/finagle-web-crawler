@@ -10,7 +10,7 @@ CREATE SCHEMA IF NOT EXISTS `web_crawler` DEFAULT CHARACTER SET utf8mb4 COLLATE 
 * Start server
 
 ``` 
-$ sbt 'run-main app.api.ApiServer'
+$ sbt 'run-main app.Server'
 ```
     
 ## Deploy application

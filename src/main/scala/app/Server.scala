@@ -1,4 +1,4 @@
-package app.api
+package app
 
 import java.net.InetSocketAddress
 
