@@ -17,6 +17,7 @@ import io.circe.generic.auto._
 import io.finch.circe._
 
 import scala.concurrent.duration._
+import scala.language.postfixOps
 
 object Server extends TwitterServer {
 
