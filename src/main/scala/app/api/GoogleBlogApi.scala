@@ -1,5 +1,6 @@
-package app.googleblog
+package app.api
 
+import app.googleblog.{GoogleBlogClient, GoogleBlogService}
 import app.model._
 import com.twitter.finagle.mysql.Client
 import io.finch._

@@ -22,7 +22,7 @@ class GoogleBlogClient extends Service[Request, Response] {
 
   override def apply(req: Request): Future[Response] = {
     req.host = dest
-    println(req.uri)
+    println(s"[INFO] [GoogleBlogClient] Request: ${req.uri}")
     service(req)
   }
 

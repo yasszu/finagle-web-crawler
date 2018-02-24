@@ -63,7 +63,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
     response map { rep =>
       val source = rep.getContentString()
       val articles = parseArticles(source, org.id)
-      println(s"Fetch ${articles.size} articles")
+      println(s"[INFO] [GoogleBlogClient] Fetch ${articles.size} articles")
       articles.reverseMap {
         case (article, categories) =>
           saveArticle(org, article, categories)
@@ -94,7 +94,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
 
   def createArticle(article: Article)(implicit mysql: Client): Future[Long] = {
     Article.insert(article).onSuccess { id =>
-      println(s"Add $id: ${article.title}")
+      println(s"[INFO] [GoogleBlogClient] Add $id: ${article.title}")
     }
   }
 
