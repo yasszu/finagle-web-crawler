@@ -15,12 +15,14 @@ $ sbt 'run-main app.Server'
     
 ## Deploy application
 * Create a JAR file
+
 ```
 $ sbt assembly
 
 ```
 
 * Run process
+
 ```
 $ java -jar target/scala-2.12/web-crawler-assembly-1.0.jar &
 ```
@@ -39,6 +41,7 @@ curl -X GET 'http://localhost:8080/feed/developers/googleblog'
 ```
 curl -X GET 'http://localhost:8080/feed/developers/googleblog/jp'
 ```
+
 ## API
 ### GET api/developers/googleblog
 #### Example
