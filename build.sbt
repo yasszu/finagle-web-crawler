@@ -19,8 +19,7 @@ libraryDependencies ++= Seq(
   "io.circe" %% "circe-parser" % "0.9.0-M2",
   "com.typesafe" % "config" % "1.3.1",
   "com.typesafe.akka" %% "akka-actor" % "2.5.10",
-  "com.typesafe.akka" %% "akka-testkit" % "2.5.10" % Test,
-  "com.enragedginger" %% "akka-quartz-scheduler" % "1.6.1-akka-2.5.x"
+  "com.typesafe.akka" %% "akka-testkit" % "2.5.10" % Test
 )
 
 mainClass in assembly := Some("app.api.Server")

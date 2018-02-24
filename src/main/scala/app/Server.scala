@@ -2,7 +2,10 @@ package app
 
 import java.net.InetSocketAddress
 
-import app.googleblog.GoogleBlogApi
+import akka.actor.ActorSystem
+import akka.util.Timeout
+import app.actors.GoogleBlogActor
+import app.api.GoogleBlogApi
 import app.util.DDL
 import com.twitter.app.Flag
 import com.twitter.finagle.mysql._
@@ -12,6 +15,8 @@ import com.twitter.util.{Await, Future}
 import com.typesafe.config.{Config, ConfigFactory}
 import io.circe.generic.auto._
 import io.finch.circe._
+
+import scala.concurrent.duration._
 
 object Server extends TwitterServer {
 
@@ -28,18 +33,49 @@ object Server extends TwitterServer {
     .withDatabase(db)
     .newRichClient("%s:%d".format(host().getHostName, host().getPort))
 
-  def createTables()(implicit client: Client): Future[Result] = {
-    client.query(DDL.createArticlesTable).onSuccess { _ => println("Create Articles table") }
-    client.query(DDL.createCategoriesTable).onSuccess { _ => println("Create Categories table") }
+  implicit val timeout: Timeout = Timeout(120 seconds)
+
+  lazy val system = ActorSystem("mySystem")
+
+  lazy val googleBlogActor = system.actorOf(GoogleBlogActor.props(), "googleBlogActor")
+
+  def createArticlesTables()(implicit client: Client): Future[Result] = {
+    client.query(DDL.createArticlesTable).onSuccess { _ =>
+      println("Create Articles table")
+    }
   }
 
-  def main() {
+  def createCategoriesTables()(implicit client: Client): Future[Result] = {
+    client.query(DDL.createCategoriesTable).onSuccess { _ =>
+      println("Create Categories table")
+    }
+  }
+
+  def startActors = Future {
+    import scala.concurrent.ExecutionContext.Implicits.global
+    import GoogleBlogActor._
+    system.scheduler.schedule(1 seconds, 10 seconds) {
+      googleBlogActor ! ScrapeDevelopersBlog
+      googleBlogActor ! ScrapeDevelopersJapan
+      googleBlogActor ! ScrapeAndroidDevelopersBlog
+    }
+  }
+
+  def readyApi = {
     val server = Http.server.serve(":8080", GoogleBlogApi().endpoints.toService)
     onExit {
       server.close()
     }
-    Await.result(createTables())
     Await.ready(server)
+  }
+
+  def main() {
+    for {
+      _ <- createArticlesTables()
+      _ <- createCategoriesTables()
+    }
+    startActors
+    readyApi
   }
 
 }
