@@ -14,10 +14,13 @@ class GoogleBlogActor()(implicit mysql: Client) extends Actor with ActorLogging 
 
   override def receive = {
     case ScrapeDevelopersBlog =>
+      googleBlogService.scrapeDevelopersBlog
       log.info("Scrape developers blog")
     case ScrapeDevelopersJapan =>
+      googleBlogService.scrapeDevelopersJapan()
       log.info("Scrape developers japan")
     case ScrapeAndroidDevelopersBlog =>
+      googleBlogService.scrapeAndroidDevelopersBlog()
       log.info("Scrape android developers blog")
   }
 

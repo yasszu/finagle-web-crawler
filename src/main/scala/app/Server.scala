@@ -34,7 +34,7 @@ object Server extends TwitterServer {
     .withDatabase(db)
     .newRichClient("%s:%d".format(host().getHostName, host().getPort))
 
-  implicit val timeout: Timeout = Timeout(120 seconds)
+  implicit val timeout: Timeout = Timeout(180 seconds)
 
   lazy val system = ActorSystem("mySystem")
 
@@ -42,20 +42,20 @@ object Server extends TwitterServer {
 
   def createArticlesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createArticlesTable).onSuccess { _ =>
-      println("Create Articles table")
+      println("[INFO] Create Articles table")
     }
   }
 
   def createCategoriesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createCategoriesTable).onSuccess { _ =>
-      println("Create Categories table")
+      println("[INFO] Create Categories table")
     }
   }
 
   def startActors = Future {
     import scala.concurrent.ExecutionContext.Implicits.global
     import GoogleBlogActor._
-    system.scheduler.schedule(1 seconds, 10 seconds) {
+    system.scheduler.schedule(1 seconds, 6 hours) {
       googleBlogActor ! ScrapeDevelopersBlog
       googleBlogActor ! ScrapeDevelopersJapan
       googleBlogActor ! ScrapeAndroidDevelopersBlog
