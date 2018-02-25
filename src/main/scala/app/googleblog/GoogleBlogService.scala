@@ -24,16 +24,17 @@ class GoogleBlogService(client: GoogleBlogClient) {
     getFromRemote(response, GoogleDevelopersJapan)
   }
 
-  def getDevelopersBlogFromDB()(implicit mysql: Client): Future[Seq[Article]] = {
-    Article.findAll(GoogleDevelopersBlog.id)
+  private def getFromRemote(response: Future[Response], org: Organization): Future[Seq[Article]] = {
+    response map { rep =>
+      val source = rep.getContentString()
+      parseArticles(source, org.id) map {
+        case (article, categories) => article
+      }
+    }
   }
 
-  def getDevelopersJapanFromDB()(implicit mysql: Client): Future[Seq[Article]] = {
-    Article.findAll(GoogleDevelopersJapan.id)
-  }
-
-  def getAndroidDevelopersBlogFromDB()(implicit mysql: Client): Future[Seq[Article]] = {
-    Article.findAll(AndroidDevelopersBlog.id)
+  def getArticlesFromDB(organization: Organization)(implicit mysql: Client): Future[Seq[Article]] = {
+    Article.findAll(organization.id)
   }
 
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
@@ -51,18 +52,9 @@ class GoogleBlogService(client: GoogleBlogClient) {
     scrape(response, AndroidDevelopersBlog)
   }
 
-  def getFromRemote(response: Future[Response], org: Organization): Future[Seq[Article]] = {
-    response map { rep =>
-      val source = rep.getContentString()
-      parseArticles(source, org.id) map {
-        case (article, categories) => article
-      }
-    }
-  }
-
-  def scrape(response: Future[Response], org: Organization)(implicit mysql: Client): Future[Unit] = {
-    response map { rep =>
-      val source = rep.getContentString()
+  private def scrape(response: Future[Response], org: Organization)(implicit mysql: Client): Future[Unit] = {
+    response map { res =>
+      val source = res.getContentString()
       val articles = parseArticles(source, org.id)
       println(s"[INFO] [GoogleBlogClient] Fetch ${articles.size} articles")
       articles.reverseMap {
@@ -72,7 +64,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
     }
   }
 
-  def saveArticle(org: Organization, article: Article, categories: Seq[String])(implicit mysql: Client): Unit = {
+  private def saveArticle(org: Organization, article: Article, categories: Seq[String])(implicit mysql: Client): Unit = {
     getLatestArticle(org) match {
       case None =>
         createArticle(article) map { id =>
@@ -87,26 +79,26 @@ class GoogleBlogService(client: GoogleBlogClient) {
     }
   }
 
-  def compare(target: Article, latest: Article): Boolean = {
+  private def compare(target: Article, latest: Article): Boolean = {
     val latestDate = parseDateFormat(latest.published)
     val targetDate = parseDateFormat(target.published)
     targetDate > latestDate
   }
 
-  def createArticle(article: Article)(implicit mysql: Client): Future[Long] = {
+  private def createArticle(article: Article)(implicit mysql: Client): Future[Long] = {
     Article.insert(article).onSuccess { id =>
       println(s"[INFO] [GoogleBlogClient] Add $id: ${article.title}")
     }
   }
 
-  def createCategories(id: Long, terms: Seq[String])(implicit mysql: Client): Unit = {
+  private def createCategories(id: Long, terms: Seq[String])(implicit mysql: Client): Unit = {
     terms.map { term =>
       Category.insert(Category(None, id, term))
     }
   }
 
-  def getLatestArticle(organization: Organization)(implicit mysql: Client): Option[Article] = {
-    Await.result(Article.findAll(organization.id, 1, 0)).headOption
+  private def getLatestArticle(organization: Organization)(implicit mysql: Client): Option[Article] = {
+    Await.result(Article.findAll(organization.id, 1)).headOption
   }
 
 }

@@ -43,7 +43,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET api/developers/googleblog
     */
   val getDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "googleblog") {
-    googleBlogService.getDevelopersBlogFromDB map { articles =>
+    googleBlogService.getArticlesFromDB(GoogleDevelopersBlog) map { articles =>
       println(s"${GoogleDevelopersBlog.name}: ${articles.size} articles")
       Ok(articles)
     }
@@ -55,7 +55,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET api/developers/googleblog/jp
     */
   val getDevelopersJapanFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "googleblog" :: "jp") {
-    googleBlogService.getDevelopersJapanFromDB map { articles =>
+    googleBlogService.getArticlesFromDB(GoogleDevelopersJapan) map { articles =>
       println(s"${GoogleDevelopersJapan.name}: ${articles.size} articles")
       Ok(articles)
     }
@@ -67,14 +67,13 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET api/developers/android
     */
   val getAndroidDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "android") {
-    googleBlogService.getAndroidDevelopersBlogFromDB() map { articles =>
+    googleBlogService.getArticlesFromDB(AndroidDevelopersBlog) map { articles =>
       println(s"${AndroidDevelopersBlog.name}: ${articles.size} articles")
       Ok(articles)
     }
   } handle {
     case e: Exception => InternalServerError(e)
   }
-
 
   /**
     * GET scrape/developers/googleblog
