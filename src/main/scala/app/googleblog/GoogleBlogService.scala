@@ -1,5 +1,6 @@
 package app.googleblog
 
+import app.googleblog.GoogleBlogClient.{GetAndroidDevelopersBlog, GetGoogleDevelopersBlog, GetGoogleDevelopersJapan}
 import app.model._
 import com.twitter.finagle.http.Response
 import com.twitter.finagle.mysql.Client
@@ -14,12 +15,12 @@ import com.twitter.util.{Await, Future}
 class GoogleBlogService(client: GoogleBlogClient) {
 
   def getDevelopersBlogFromRemote: Future[Seq[Article]] = {
-    val response = client.getGoogleDevelopersBlog
+    val response = client.request(GetGoogleDevelopersBlog)
     getFromRemote(response, GoogleDevelopersBlog)
   }
 
   def getDevelopersBlogJapanFormRemote: Future[Seq[Article]] = {
-    val response = client.getGoogleDevelopersJapan
+    val response = client.request(GetGoogleDevelopersJapan)
     getFromRemote(response, GoogleDevelopersJapan)
   }
 
@@ -36,17 +37,17 @@ class GoogleBlogService(client: GoogleBlogClient) {
   }
 
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
-    val response = client.getGoogleDevelopersBlog
+    val response = client.request(GetGoogleDevelopersBlog)
     scrape(response, GoogleDevelopersBlog)
   }
 
   def scrapeDevelopersJapan()(implicit mysql: Client): Future[Unit] = {
-    val response = client.getGoogleDevelopersJapan
+    val response = client.request(GetGoogleDevelopersJapan)
     scrape(response, GoogleDevelopersJapan)
   }
 
   def scrapeAndroidDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
-    val response = client.getAndroidDevelopersBlog
+    val response = client.request(GetAndroidDevelopersBlog)
     scrape(response, AndroidDevelopersBlog)
   }
 

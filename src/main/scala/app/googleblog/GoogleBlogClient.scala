@@ -3,6 +3,7 @@ package app.googleblog
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, Service, http}
 import com.twitter.util.Future
+import GoogleBlogClient._
 
 /**
   * Created by Yasuhiro Suzuki on 2018/01/21.
@@ -12,12 +13,10 @@ import com.twitter.util.Future
 
 class GoogleBlogClient extends Service[Request, Response] {
 
-  val hostname = "feeds.feedburner.com"
-
-  val dest = s"$hostname:443"
+  val dest = s"$HostName:443"
 
   val service: Service[Request, Response] = Http.client
-    .withTls(hostname)
+    .withTls(HostName)
     .newService(dest)
 
   override def apply(req: Request): Future[Response] = {
@@ -26,33 +25,22 @@ class GoogleBlogClient extends Service[Request, Response] {
     service(req)
   }
 
-  def getGoogleDevelopersBlog: Future[Response] = {
+  def request(path: Path): Future[Response] = {
     val method = http.Method.Get
-    val path = "/GDBcode"
-    apply(http.Request(method, path))
-  }
-
-  def getGoogleDevelopersJapan: Future[Response] = {
-    val method = http.Method.Get
-    val path = "/GoogleJapanDeveloperRelationsBlog"
-    apply(http.Request(method, path))
-  }
-
-  def getAndroidDevelopersBlog: Future[Response] = {
-    val method = http.Method.Get
-    val path = "/blogspot/hsDu"
-    apply(http.Request(method, path))
-  }
-
-  def getGoogleResearchBlog: Future[Response] = {
-    val method = http.Method.Get
-    val path = "/blogspot/gJZg"
-    apply(http.Request(method, path))
+    apply(http.Request(method, path.value))
   }
 
 }
 
 object GoogleBlogClient {
+
+  val HostName = "feeds.feedburner.com"
+
+  sealed abstract class Path(val value: String)
+  case object GetGoogleDevelopersBlog extends Path("/GDBcode")
+  case object GetGoogleDevelopersJapan extends Path("/GoogleJapanDeveloperRelationsBlog")
+  case object GetAndroidDevelopersBlog extends Path("/blogspot/hsDu")
+  case object GetGoogleSearchBlog extends Path("/blogspot/gJZg")
 
   def apply(): GoogleBlogClient = new GoogleBlogClient()
 
