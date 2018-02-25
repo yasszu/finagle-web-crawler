@@ -1,4 +1,4 @@
-package app.actors
+package app.actor
 
 import akka.actor.{Actor, ActorLogging, Props}
 import app.googleblog.{GoogleBlogClient, GoogleBlogService}

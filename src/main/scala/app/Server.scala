@@ -4,7 +4,7 @@ import java.net.InetSocketAddress
 
 import akka.actor.ActorSystem
 import akka.util.Timeout
-import app.actors.GoogleBlogActor
+import app.actor.GoogleBlogActor
 import app.api.GoogleBlogApi
 import app.util.DDL
 import com.twitter.app.Flag
