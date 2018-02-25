@@ -33,8 +33,8 @@ class GoogleBlogService(client: GoogleBlogClient) {
     }
   }
 
-  def getArticlesFromDB(organization: Organization)(implicit mysql: Client): Future[Seq[Article]] = {
-    Article.findAll(organization.id)
+  def getArticlesFromDB(org: Organization, limit: Int = 100, offset: Int = 0)(implicit mysql: Client): Future[Seq[Article]] = {
+    Article.findAll(org.id, limit, offset)
   }
 
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {

@@ -52,21 +52,21 @@ curl -X GET 'http://localhost:8080/feed/googleblog/developers_jp'
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/api/googleblog/developers'
+curl -X GET 'http://localhost:8080/api/googleblog/developers?count=5&page=0'
 ```
 
 ### GET api/googleblog/developers_jp
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/api/googleblog/developers_jp'
+curl -X GET 'http://localhost:8080/api/googleblog/developers_jp?count=5&page=0'
 ```
 
 ### GET api/developers/android
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/api/developers/android'
+curl -X GET 'http://localhost:8080/api/developers/android?count=5&page=0'
 ```
 ## Execute scraping
 ### GET scrape/googleblog/developers
