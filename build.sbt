@@ -1,4 +1,4 @@
-name := "web-crawler"
+name := "finagle-web-crawler"
 
 organization := "yasszu"
 

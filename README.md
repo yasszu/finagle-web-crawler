@@ -1,4 +1,9 @@
 # Finagle Web Crawler  
+# Web Crawler with Finagle
+Scrape below blogs:
+- [Google Developers Blog](https://developers.googleblog.com/)
+- [Google Developers Japan](https://developers-jp.googleblog.com/)
+- [Android Developers Blog](https://android-developers.googleblog.com/)
 
 ## Getting Started
 
@@ -10,10 +15,10 @@ CREATE SCHEMA IF NOT EXISTS `web_crawler` DEFAULT CHARACTER SET utf8mb4 COLLATE 
 
 * Start server
 
-``` 
+```
 $ sbt 'run-main app.Server'
 ```
-    
+
 ## Deploy application
 * Create a JAR file
 
@@ -27,7 +32,7 @@ $ sbt assembly
 ```
 $ java -jar target/scala-2.12/web-crawler-assembly-1.0.jar &
 ```
-    
+
 ## Feed
 ### GET feed/googleblog/developers
 #### Example
