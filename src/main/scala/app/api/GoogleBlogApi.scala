@@ -16,9 +16,9 @@ class GoogleBlogApi()(implicit mysql: Client) {
   val googleBlogService = GoogleBlogService()
 
   /**
-    * GET feed/developers/googleblog
+    * GET feed/googleblog/developers
     */
-  val getDevelopersBlog: Endpoint[Seq[Article]] = get("feed" :: "developers" :: "googleblog") {
+  val getDevelopersBlog: Endpoint[Seq[Article]] = get("feed" ::  "googleblog" :: "developers") {
     googleBlogService.getDevelopersBlogFromRemote map { articles =>
       articles.foreach(a => print(a.title + ","))
       Ok(articles)
@@ -28,9 +28,9 @@ class GoogleBlogApi()(implicit mysql: Client) {
   }
 
   /**
-    * GET feed/developers/googleblog/jp
+    * GET feed/googleblog/developers_jp
     */
-  val getDevelopersJapan: Endpoint[Seq[Article]] = get("feed" :: "developers" :: "googleblog" :: "jp") {
+  val getDevelopersJapan: Endpoint[Seq[Article]] = get("feed" :: "googleblog" :: "developers_jp") {
     googleBlogService.getDevelopersBlogJapanFormRemote map { articles =>
       articles.foreach(a => print(a.title + ","))
       Ok(articles)
@@ -40,11 +40,11 @@ class GoogleBlogApi()(implicit mysql: Client) {
   }
 
   /**
-    * GET api/developers/googleblog
+    * GET api/googleblog/developers
     */
-  val getDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "googleblog") {
+  val getDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "googleblog" :: "developers") {
     googleBlogService.getArticlesFromDB(GoogleDevelopersBlog) map { articles =>
-      println(s"${GoogleDevelopersBlog.name}: ${articles.size} articles")
+      println(s"[INFO] [API] GET api/googleblog/developers: ${articles.size} articles")
       Ok(articles)
     }
   } handle {
@@ -52,11 +52,11 @@ class GoogleBlogApi()(implicit mysql: Client) {
   }
 
   /**
-    * GET api/developers/googleblog/jp
+    * GET api/googleblog/developers_jp
     */
-  val getDevelopersJapanFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "googleblog" :: "jp") {
+  val getDevelopersJapanFormDb: Endpoint[Seq[Article]] = get("api" :: "googleblog" :: "developers_jp") {
     googleBlogService.getArticlesFromDB(GoogleDevelopersJapan) map { articles =>
-      println(s"${GoogleDevelopersJapan.name}: ${articles.size} articles")
+      println(s"[INFO] [API] GET api/googleblog/developers_jp : ${articles.size} articles")
       Ok(articles)
     }
   } handle {
@@ -68,7 +68,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     */
   val getAndroidDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "android") {
     googleBlogService.getArticlesFromDB(AndroidDevelopersBlog) map { articles =>
-      println(s"${AndroidDevelopersBlog.name}: ${articles.size} articles")
+      println(s"[INFO] [API] GET api/developers/android: ${articles.size} articles")
       Ok(articles)
     }
   } handle {
@@ -76,9 +76,9 @@ class GoogleBlogApi()(implicit mysql: Client) {
   }
 
   /**
-    * GET scrape/developers/googleblog
+    * GET scrape/googleblog/developers
     */
-  val scrapeDevelopersBlog: Endpoint[String] = get("scrape" :: "developers" :: "googleblog") {
+  val scrapeDevelopersBlog: Endpoint[String] = get("scrape" :: "googleblog" :: "developers") {
     googleBlogService.scrapeDevelopersBlog map { _ =>
       Ok("Success")
     }
@@ -87,9 +87,9 @@ class GoogleBlogApi()(implicit mysql: Client) {
   }
 
   /**
-    * GET scrape/developers/googleblog/jp
+    * GET scrape/googleblog/developers_jp
     */
-  val scrapeDevelopersJapan: Endpoint[String] = get("scrape" :: "developers" :: "googleblog" :: "jp") {
+  val scrapeDevelopersJapan: Endpoint[String] = get("scrape" :: "googleblog" :: "developers_jp") {
     googleBlogService.scrapeDevelopersJapan() map { _ =>
       Ok("success")
     }
@@ -98,9 +98,9 @@ class GoogleBlogApi()(implicit mysql: Client) {
   }
 
   /**
-    * GET scrape/developers/android
+    * GET scrape/googleblog/android
     */
-  val scrapeAndroidDevelopersBlog: Endpoint[String] = get("scrape" :: "developers" :: "android") {
+  val scrapeAndroidDevelopersBlog: Endpoint[String] = get("scrape" :: "googleblog" :: "android") {
     googleBlogService.scrapeAndroidDevelopersBlog() map { _ =>
       Ok("success")
     }
