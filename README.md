@@ -1,4 +1,3 @@
-# Finagle Web Crawler  
 # Web Crawler with Finagle
 Scrape below blogs:
 - [Google Developers Blog](https://developers.googleblog.com/)
