@@ -68,7 +68,7 @@ curl -X GET 'http://localhost:8080/api/googleblog/developers_jp?count=5&page=0'
 ```
 curl -X GET 'http://localhost:8080/api/developers/android?count=5&page=0'
 ```
-## Execute scraping
+## Execute scraping by manual
 ### GET scrape/googleblog/developers
 #### Example
 
