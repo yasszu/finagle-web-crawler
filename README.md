@@ -29,7 +29,7 @@ $ sbt assembly
 * Run process
 
 ```
-$ java -jar target/scala-2.12/web-crawler-assembly-1.0.jar &
+$ java -jar target/scala-2.12/finagle-web-crawler-assembly-1.0.jar &
 ```
 
 ## Feed
