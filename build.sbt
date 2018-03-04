@@ -22,9 +22,15 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % "2.5.10" % Test
 )
 
-mainClass in assembly := Some("app.api.Server")
-
+// SBT assembly
+mainClass in assembly := Some("app.Server")
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs@_*) => MergeStrategy.discard
   case x => MergeStrategy.first
 }
+
+// Docker settings
+enablePlugins(JavaServerAppPackaging)
+maintainer in Docker := "yasszu"
+dockerBaseImage in Docker := "openjdk:8u131-jdk-alpine"
+dockerExposedPorts in Docker := Seq(8080, 8080)
