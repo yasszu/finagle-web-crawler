@@ -5,13 +5,6 @@ Scrape below blogs:
 - [Android Developers Blog](https://android-developers.googleblog.com/)
 
 ## Getting Started
-
-* Create a Database (MySQL)  
-
-```sql
-CREATE SCHEMA IF NOT EXISTS `web_crawler` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
 * Start server
 
 ```
@@ -37,14 +30,14 @@ $ java -jar target/scala-2.12/web-crawler-assembly-1.0.jar &
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/feed/googleblog/developers'
+$ curl -X GET 'http://localhost:8080/feed/googleblog/developers'
 ```
 
 ### GET feed/googleblog/developers_jp
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/feed/googleblog/developers_jp'
+$ curl -X GET 'http://localhost:8080/feed/googleblog/developers_jp'
 ```
 
 ## API
@@ -52,40 +45,40 @@ curl -X GET 'http://localhost:8080/feed/googleblog/developers_jp'
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/api/googleblog/developers?count=5&page=0'
+$ curl -X GET 'http://localhost:8080/api/googleblog/developers?count=5&page=0'
 ```
 
 ### GET api/googleblog/developers_jp
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/api/googleblog/developers_jp?count=5&page=0'
+$ curl -X GET 'http://localhost:8080/api/googleblog/developers_jp?count=5&page=0'
 ```
 
 ### GET api/developers/android
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/api/developers/android?count=5&page=0'
+$ curl -X GET 'http://localhost:8080/api/developers/android?count=5&page=0'
 ```
 ## Execute scraping
 ### GET scrape/googleblog/developers
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/scrape/googleblog/developers'
+$ curl -X GET 'http://localhost:8080/scrape/googleblog/developers'
 ```
 
 ### GET scrape/googleblog/developers_jp
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/scrape/googleblog/developers_jp'
+$ curl -X GET 'http://localhost:8080/scrape/googleblog/developers_jp'
 ```
 
 ### GET scrape/googleblog/android
 #### Example
 
 ```
-curl -X GET 'http://localhost:8080/scrape/googleblog/android'
+$ curl -X GET 'http://localhost:8080/scrape/googleblog/android'
 ```

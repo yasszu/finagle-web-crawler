@@ -40,6 +40,17 @@ object Server extends TwitterServer {
 
   lazy val googleBlogActor = system.actorOf(GoogleBlogActor.props(), "googleBlogActor")
 
+  lazy val server = Http.server.serve(":8080", GoogleBlogApi().endpoints.toService)
+
+  def createSchema(): Future[Result] = {
+    Mysql.client
+      .withCredentials(user, password)
+      .newRichClient("%s:%d".format(host().getHostName, host().getPort))
+      .query(DDL.createSchema).onSuccess { _ =>
+      println("[INFO] Create schema finagle_web_crawler")
+    }
+  }
+
   def createArticlesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createArticlesTable).onSuccess { _ =>
       println("[INFO] Create Articles table")
@@ -62,8 +73,7 @@ object Server extends TwitterServer {
     }
   }
 
-  def readyApi = {
-    val server = Http.server.serve(":8080", GoogleBlogApi().endpoints.toService)
+  def readyApi = Future {
     onExit {
       server.close()
     }
@@ -72,6 +82,7 @@ object Server extends TwitterServer {
 
   def main() {
     for {
+      _ <- createSchema()
       _ <- createArticlesTables()
       _ <- createCategoriesTables()
     }
