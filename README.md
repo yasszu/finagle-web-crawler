@@ -32,6 +32,22 @@ $ sbt assembly
 $ java -jar target/scala-2.12/web-crawler-assembly-1.0.jar &
 ```
 
+## Docker
+Build image
+
+``` 
+$ sbt docker:publishLocal
+```
+
+Run
+
+```
+$ docker run -p 8080:8080 finagle-web-crawler:1.0-SNAPSHOT
+```
+
+Refs
+- https://www.scala-sbt.org/sbt-native-packager/formats/docker.html
+
 ## Feed
 ### GET feed/googleblog/developers
 #### Example
