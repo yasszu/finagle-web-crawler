@@ -1,0 +1,18 @@
+version: '3'
+services:
+  db:
+   image: mysql
+   restart: always
+   command: mysqld --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+   volumes:
+         - ./mysql/mysql-data:/var/lib/mysql
+   environment:
+    MYSQL_DATABASE: web_crawler
+    MYSQL_ROOT_PASSWORD: root
+  web:
+    build:
+      context: ./target/docker/stage/
+    ports:
+     - "8080:8080"
+    links:
+      - db

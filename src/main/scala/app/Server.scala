@@ -24,7 +24,7 @@ object Server extends TwitterServer {
   override def failfastOnFlagsNotParsed: Boolean = true
 
   val conf: Config = ConfigFactory.load()
-  val host: Flag[InetSocketAddress] = flag("db.host", new InetSocketAddress("localhost", 3306), "Mysql server address")
+  val host: Flag[InetSocketAddress] = flag("db.host", new InetSocketAddress("db", 3306), "Mysql server address")
   val user: String = conf.getString("mysql.user")
   val password: String = conf.getString("mysql.password")
   val db: String = conf.getString("mysql.db")
@@ -71,6 +71,7 @@ object Server extends TwitterServer {
   }
 
   def main() {
+    println("Listening for HTTP on /0.0.0.0:8080")
     for {
       _ <- createArticlesTables()
       _ <- createCategoriesTables()
