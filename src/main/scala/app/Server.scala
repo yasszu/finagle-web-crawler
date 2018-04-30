@@ -6,10 +6,9 @@ import akka.actor.ActorSystem
 import akka.util.Timeout
 import app.actor.GoogleBlogActor
 import app.api.GoogleBlogApi
-import app.util.DDL
+import app.service.MysqlClient
 import com.twitter.app.Flag
-import com.twitter.finagle.mysql._
-import com.twitter.finagle.{Http, Mysql}
+import com.twitter.finagle.Http
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import com.typesafe.config.{Config, ConfigFactory}
@@ -19,7 +18,7 @@ import io.finch.circe._
 import scala.concurrent.duration._
 import scala.language.postfixOps
 
-object Server extends TwitterServer {
+object Server extends TwitterServer with MysqlClient {
 
   override def failfastOnFlagsNotParsed: Boolean = true
 
@@ -29,32 +28,18 @@ object Server extends TwitterServer {
   val password: String = conf.getString("mysql.password")
   val db: String = conf.getString("mysql.db")
 
-  implicit lazy val mysqlClient: Client with Transactions = Mysql.client
-    .withCredentials(user, password)
-    .withDatabase(db)
-    .newRichClient("%s:%d".format(host().getHostName, host().getPort))
-
   implicit val timeout: Timeout = Timeout(180 seconds)
 
   lazy val system = ActorSystem("mySystem")
 
   lazy val googleBlogActor = system.actorOf(GoogleBlogActor.props(), "googleBlogActor")
 
-  def createArticlesTables()(implicit client: Client): Future[Result] = {
-    client.query(DDL.createArticlesTable).onSuccess { _ =>
-      println("[INFO] Create Articles table")
-    }
-  }
-
-  def createCategoriesTables()(implicit client: Client): Future[Result] = {
-    client.query(DDL.createCategoriesTable).onSuccess { _ =>
-      println("[INFO] Create Categories table")
-    }
-  }
+  lazy val server = Http.server.serve(":8080", GoogleBlogApi().endpoints.toService)
 
   def startActors = Future {
-    import scala.concurrent.ExecutionContext.Implicits.global
     import GoogleBlogActor._
+
+    import scala.concurrent.ExecutionContext.Implicits.global
     system.scheduler.schedule(1 seconds, 6 hours) {
       googleBlogActor ! ScrapeDevelopersBlog
       googleBlogActor ! ScrapeDevelopersJapan
@@ -62,8 +47,7 @@ object Server extends TwitterServer {
     }
   }
 
-  def readyApi = {
-    val server = Http.server.serve(":8080", GoogleBlogApi().endpoints.toService)
+  def readyApi = Future {
     onExit {
       server.close()
     }
@@ -73,10 +57,11 @@ object Server extends TwitterServer {
   def main() {
     println("Listening for HTTP on /0.0.0.0:8080")
     for {
+      _ <- createSchema()
       _ <- createArticlesTables()
       _ <- createCategoriesTables()
-    }
-    startActors
+      _ <- startActors
+    } yield ()
     readyApi
   }
 
