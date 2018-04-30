@@ -3,7 +3,6 @@ package app.service
 import java.net.InetSocketAddress
 
 import app.util.DDL
-import com.twitter.app.Flag
 import com.twitter.finagle.Mysql
 import com.twitter.finagle.mysql._
 import com.twitter.util.Future
@@ -13,24 +12,18 @@ import com.twitter.util.Future
   */
 trait MysqlClient {
 
-  val host: Flag[InetSocketAddress]
+  val host: String
+  val port: Int
   val user: String
   val password: String
   val db: String
 
+  lazy val addr: InetSocketAddress = new InetSocketAddress(host, port)
+
   implicit lazy val mysqlClient: Client with Transactions = Mysql.client
     .withCredentials(user, password)
     .withDatabase(db)
-    .newRichClient("%s:%d".format(host().getHostName, host().getPort))
-
-  def createSchema(): Future[Result] = {
-    Mysql.client
-      .withCredentials(user, password)
-      .newRichClient("%s:%d".format(host().getHostName, host().getPort))
-      .query(DDL.createSchema).onSuccess { _ =>
-      println("[INFO] Create schema finagle_web_crawler")
-    }
-  }
+    .newRichClient("%s:%d".format(addr.getHostName, addr.getPort))
 
   def createArticlesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createArticlesTable).onSuccess { _ =>

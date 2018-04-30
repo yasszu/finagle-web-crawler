@@ -8,7 +8,7 @@ services:
     - ./mysql/data:/var/lib/mysql
     - ./mysql/conf:/etc/mysql/conf.d
    environment:
-    MYSQL_DATABASE: web_crawler
+    MYSQL_DATABASE: crawler
     MYSQL_ROOT_PASSWORD: root
 
   web:
