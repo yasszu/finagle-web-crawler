@@ -1,0 +1,20 @@
+version: '3'
+services:
+
+  db:
+   image: mysql
+   restart: always
+   volumes:
+    - ./mysql/data:/var/lib/mysql
+    - ./mysql/conf:/etc/mysql/conf.d
+   environment:
+    MYSQL_DATABASE: crawler
+    MYSQL_ROOT_PASSWORD: root
+
+  web:
+    build:
+      context: ./target/docker/stage/
+    ports:
+      - "8080:8080"
+    links:
+      - db

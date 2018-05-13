@@ -2,9 +2,6 @@ package app.util
 
 object DDL {
 
-  val createSchema =
-    """CREATE SCHEMA IF NOT EXISTS `finagle_web_crawler` DEFAULT CHARACTER SET utf8mb4"""
-
   val createArticlesTable =
     """CREATE TABLE IF NOT EXISTS `articles` (
          `id` BIGINT(20) NOT NULL AUTO_INCREMENT,

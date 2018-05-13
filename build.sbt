@@ -1,12 +1,30 @@
-name := "finagle-web-crawler"
+// Common settings
+lazy val commonSettings = Seq(
+  organization := "yasszu",
+  version := "1.0-SNAPSHOT",
+  scalaVersion := "2.12.4"
+)
 
-organization := "yasszu"
+// SBT assembly
+lazy val assemblySettings = Seq(
+  mainClass in assembly := Some("app.Server"),
 
-version := "1.0"
+  // Excluding specific files
+  assemblyMergeStrategy in assembly := {
+    case PathList("META-INF", xs@_*) => MergeStrategy.discard
+    case x => MergeStrategy.first
+  }
+)
 
-scalaVersion := "2.12.4"
+// Docker settings
+lazy val dockerSettings = Seq(
+  maintainer in Docker := "yasszu",
+  dockerBaseImage in Docker := "openjdk:8u131-jdk-alpine",
+  dockerExposedPorts in Docker := Seq(8080, 8080)
+)
 
-libraryDependencies ++= Seq(
+// Library
+lazy val dependencies = Seq(
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0-M2",
@@ -22,9 +40,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-testkit" % "2.5.10" % Test
 )
 
-mainClass in assembly := Some("app.api.Server")
-
-assemblyMergeStrategy in assembly := {
-  case PathList("META-INF", xs@_*) => MergeStrategy.discard
-  case x => MergeStrategy.first
-}
+lazy val root = (project in file("."))
+  .enablePlugins(JavaServerAppPackaging, DockerPlugin)
+  .settings(
+    commonSettings,
+    name := "finagle-web-crawler",
+    libraryDependencies ++= dependencies,
+    assemblySettings,
+    dockerSettings
+  )

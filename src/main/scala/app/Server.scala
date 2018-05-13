@@ -1,13 +1,10 @@
 package app
 
-import java.net.InetSocketAddress
-
 import akka.actor.ActorSystem
 import akka.util.Timeout
 import app.actor.GoogleBlogActor
 import app.api.GoogleBlogApi
 import app.service.MysqlClient
-import com.twitter.app.Flag
 import com.twitter.finagle.Http
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
@@ -23,10 +20,11 @@ object Server extends TwitterServer with MysqlClient {
   override def failfastOnFlagsNotParsed: Boolean = true
 
   val conf: Config = ConfigFactory.load()
-  val host: Flag[InetSocketAddress] = flag("db.host", new InetSocketAddress("localhost", 3306), "Mysql server address")
   val user: String = conf.getString("mysql.user")
   val password: String = conf.getString("mysql.password")
   val db: String = conf.getString("mysql.db")
+  val host: String = conf.getString("mysql.host")
+  val port: Int = conf.getInt("mysql.port")
 
   implicit val timeout: Timeout = Timeout(180 seconds)
 
@@ -55,8 +53,8 @@ object Server extends TwitterServer with MysqlClient {
   }
 
   def main() {
+    println("Listening for HTTP on /0.0.0.0:8080")
     for {
-      _ <- createSchema()
       _ <- createArticlesTables()
       _ <- createCategoriesTables()
       _ <- startActors
