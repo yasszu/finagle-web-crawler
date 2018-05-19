@@ -10,6 +10,12 @@ https://docs.docker.com/compose/install/
 
 ## Run application
 
+```
+$ sbt 'run-main app.Server'
+```
+
+## Run with Docker
+
 ``` 
 $ sbt docker:publishLocal
 $ docker-compose build
