@@ -10,10 +10,16 @@ https://docs.docker.com/compose/install/
 
 ## Run application
 
+```
+$ sbt 'run-main app.Server'
+```
+
+## Run with Docker
+
 ``` 
 $ sbt docker:publishLocal
 $ docker-compose build
-$ docker-compose run
+$ docker-compose up
 ```
 
 ## MySQL container shell
