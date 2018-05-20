@@ -1,5 +1,6 @@
 package app.googleblog
 
+import app.util._
 import com.twitter.finagle.http.{Request, Response}
 import com.twitter.finagle.{Http, Service, http}
 import com.twitter.util.Future
@@ -21,7 +22,7 @@ class GoogleBlogClient extends Service[Request, Response] {
 
   override def apply(req: Request): Future[Response] = {
     req.host = dest
-    println(s"[INFO] [GoogleBlogClient] Request: ${req.uri}")
+    log.info(s"[GoogleBlogClient] Request: ${req.uri}")
     service(req)
   }
 

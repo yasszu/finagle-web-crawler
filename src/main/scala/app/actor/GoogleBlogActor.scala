@@ -13,15 +13,9 @@ class GoogleBlogActor()(implicit mysql: Client) extends Actor with ActorLogging 
   val googleBlogService = GoogleBlogService()
 
   override def receive = {
-    case ScrapeDevelopersBlog =>
-      googleBlogService.scrapeDevelopersBlog
-      log.info("Scrape developers blog")
-    case ScrapeDevelopersJapan =>
-      googleBlogService.scrapeDevelopersJapan()
-      log.info("Scrape developers japan")
-    case ScrapeAndroidDevelopersBlog =>
-      googleBlogService.scrapeAndroidDevelopersBlog()
-      log.info("Scrape android developers blog")
+    case ScrapeDevelopersBlog => googleBlogService.scrapeDevelopersBlog
+    case ScrapeDevelopersJapan => googleBlogService.scrapeDevelopersJapan()
+    case ScrapeAndroidDevelopersBlog => googleBlogService.scrapeAndroidDevelopersBlog()
   }
 
 }
@@ -29,7 +23,9 @@ class GoogleBlogActor()(implicit mysql: Client) extends Actor with ActorLogging 
 object GoogleBlogActor {
 
   case object ScrapeDevelopersBlog
+
   case object ScrapeDevelopersJapan
+
   case object ScrapeAndroidDevelopersBlog
 
   def props()(implicit mysql: Client): Props = Props(new GoogleBlogActor())

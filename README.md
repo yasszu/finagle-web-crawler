@@ -19,7 +19,7 @@ $ sbt 'run-main app.Server'
 ``` 
 $ sbt docker:publishLocal
 $ docker-compose build
-$ docker-compose run
+$ docker-compose up
 ```
 
 ## MySQL container shell

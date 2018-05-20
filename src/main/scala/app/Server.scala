@@ -8,6 +8,7 @@ import app.service.MysqlClient
 import com.twitter.finagle.Http
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
+import app.util._
 import com.typesafe.config.{Config, ConfigFactory}
 import io.circe.generic.auto._
 import io.finch.circe._
@@ -53,7 +54,7 @@ object Server extends TwitterServer with MysqlClient {
   }
 
   def main() {
-    println("Listening for HTTP on /0.0.0.0:8080")
+    log.info("Listening for HTTP on /0.0.0.0:8080")
     for {
       _ <- createArticlesTables()
       _ <- createCategoriesTables()

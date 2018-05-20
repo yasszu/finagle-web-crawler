@@ -28,6 +28,7 @@ lazy val dependencies = Seq(
   "org.scala-lang.modules" %% "scala-xml" % "1.0.6",
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scala-lang.modules" %% "scala-swing" % "2.0.0-M2",
+  "ch.qos.logback" % "logback-classic" % "1.2.3",
   "com.twitter" %% "finagle-mysql" % "17.11.0",
   "com.twitter" %% "twitter-server" % "17.11.0",
   "com.github.finagle" %% "finch-core" % "0.16.0-M5",

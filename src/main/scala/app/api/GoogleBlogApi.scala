@@ -3,6 +3,7 @@ package app.api
 import app.api.GoogleBlogApi.Page
 import app.googleblog.{GoogleBlogClient, GoogleBlogService}
 import app.model._
+import app.util._
 import com.twitter.finagle.mysql.Client
 import io.finch._
 
@@ -23,7 +24,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     */
   val getDevelopersBlog: Endpoint[Seq[Article]] = get("feed" :: "googleblog" :: "developers") {
     googleBlogService.getDevelopersBlogFromRemote map { articles =>
-      articles.foreach(a => print(a.title + ","))
+      articles.foreach(a => log.info(a.title + ","))
       Ok(articles)
     }
   } handle {
@@ -35,7 +36,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     */
   val getDevelopersJapan: Endpoint[Seq[Article]] = get("feed" :: "googleblog" :: "developers_jp") {
     googleBlogService.getDevelopersBlogJapanFormRemote map { articles =>
-      articles.foreach(a => print(a.title + ","))
+      articles.foreach(a => log.info(a.title + ","))
       Ok(articles)
     }
   } handle {
@@ -47,7 +48,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     */
   val getDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "googleblog" :: "developers" :: page) { p: Page =>
     googleBlogService.getArticlesFromDB(GoogleDevelopersBlog, p.count, p.page) map { articles =>
-      println(s"[INFO] [API] GET api/googleblog/developers: ${articles.size} articles")
+      log.info(s"[API] GET api/googleblog/developers: ${articles.size} articles")
       Ok(articles)
     }
   } handle {
@@ -59,7 +60,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     */
   val getDevelopersJapanFormDb: Endpoint[Seq[Article]] = get("api" :: "googleblog" :: "developers_jp" :: page) { p: Page =>
     googleBlogService.getArticlesFromDB(GoogleDevelopersJapan, p.count, p.page) map { articles =>
-      println(s"[INFO] [API] GET api/googleblog/developers_jp: ${articles.size} articles")
+      log.info(s"[API] GET api/googleblog/developers_jp: ${articles.size} articles")
       Ok(articles)
     }
   } handle {
@@ -71,7 +72,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     */
   val getAndroidDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "android" :: page) { p: Page =>
     googleBlogService.getArticlesFromDB(AndroidDevelopersBlog, p.count, p.page) map { articles =>
-      println(s"[INFO] [API] GET api/developers/android: ${articles.size} articles")
+      log.info(s"[API] GET api/developers/android: ${articles.size} articles")
       Ok(articles)
     }
   } handle {

@@ -2,6 +2,7 @@ package app.googleblog
 
 import app.googleblog.GoogleBlogClient.{GetAndroidDevelopersBlog, GetGoogleDevelopersBlog, GetGoogleDevelopersJapan}
 import app.model._
+import app.util._
 import com.twitter.finagle.http.Response
 import com.twitter.finagle.mysql.Client
 import com.twitter.util.{Await, Future}
@@ -38,16 +39,19 @@ class GoogleBlogService(client: GoogleBlogClient) {
   }
 
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
+    log.info("Scrape developers blog")
     val response = client.request(GetGoogleDevelopersBlog)
     scrape(response, GoogleDevelopersBlog)
   }
 
   def scrapeDevelopersJapan()(implicit mysql: Client): Future[Unit] = {
+    log.info("Scrape developers japan")
     val response = client.request(GetGoogleDevelopersJapan)
     scrape(response, GoogleDevelopersJapan)
   }
 
   def scrapeAndroidDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
+    log.info("Scrape android developers blog")
     val response = client.request(GetAndroidDevelopersBlog)
     scrape(response, AndroidDevelopersBlog)
   }
@@ -56,7 +60,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
     response map { res =>
       val source = res.getContentString()
       val articles = parseArticles(source, org.id)
-      println(s"[INFO] [GoogleBlogClient] Fetch ${articles.size} articles")
+      log.info(s"[GoogleBlogClient] Fetch ${articles.size} articles")
       articles.reverseMap {
         case (article, categories) =>
           saveArticle(org, article, categories)
@@ -87,7 +91,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
 
   private def createArticle(article: Article)(implicit mysql: Client): Future[Long] = {
     Article.insert(article).onSuccess { id =>
-      println(s"[INFO] [GoogleBlogClient] Add $id: ${article.title}")
+      log.info(s"[GoogleBlogClient] Add $id: ${article.title}")
     }
   }
 

@@ -3,6 +3,7 @@ package app.service
 import java.net.InetSocketAddress
 
 import app.util.DDL
+import app.util._
 import com.twitter.finagle.Mysql
 import com.twitter.finagle.mysql._
 import com.twitter.util.Future
@@ -27,13 +28,13 @@ trait MysqlClient {
 
   def createArticlesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createArticlesTable).onSuccess { _ =>
-      println("[INFO] Create Articles table")
+      log.info("Create Articles table")
     }
   }
 
   def createCategoriesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createCategoriesTable).onSuccess { _ =>
-      println("[INFO] Create Categories table")
+      log.info("[INFO] Create Categories table")
     }
   }
 
