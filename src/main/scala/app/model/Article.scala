@@ -3,6 +3,7 @@ package app.model
 import com.twitter.finagle.mysql.Client
 import com.twitter.finagle.mysql._
 import com.twitter.util.Future
+import app.util._
 
 case class Article(
     id: Option[Long],
@@ -12,7 +13,15 @@ case class Article(
     thumbnail: String,
     link: String,
     organization_id: Long
-)
+) {
+
+  def biggerThan(that: Article): Boolean = {
+    val latestDate = parseDateFormat(published)
+    val targetDate = parseDateFormat(that.published)
+    targetDate > latestDate
+  }
+
+}
 
 object Article {
 
