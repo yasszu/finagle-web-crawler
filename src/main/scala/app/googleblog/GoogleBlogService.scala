@@ -15,29 +15,6 @@ import com.twitter.util.{Await, Future}
   */
 class GoogleBlogService(client: GoogleBlogClient) {
 
-  def getDevelopersBlogFromRemote: Future[Seq[Article]] = {
-    val response = client.request(GetGoogleDevelopersBlog)
-    getFromRemote(response, GoogleDevelopersBlog)
-  }
-
-  def getDevelopersBlogJapanFormRemote: Future[Seq[Article]] = {
-    val response = client.request(GetGoogleDevelopersJapan)
-    getFromRemote(response, GoogleDevelopersJapan)
-  }
-
-  private def getFromRemote(response: Future[Response], org: Organization): Future[Seq[Article]] = {
-    response map { rep =>
-      val source = rep.getContentString()
-      parseArticles(source, org.id) map {
-        case (article, categories) => article
-      }
-    }
-  }
-
-  def getArticlesFromDB(org: Organization, limit: Int = 100, offset: Int = 0)(implicit mysql: Client): Future[Seq[Article]] = {
-    Article.findAll(org.id, limit, offset)
-  }
-
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape developers blog")
     val response = client.request(GetGoogleDevelopersBlog)
