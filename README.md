@@ -11,7 +11,7 @@ https://docs.docker.com/compose/install/
 ## Run application
 
 ```
-$ sbt 'run-main app.Server'
+$ sbt 'run-main app.Server -db.host localhost'
 ```
 
 ## Run with Docker
