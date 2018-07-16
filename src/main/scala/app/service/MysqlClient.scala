@@ -34,7 +34,7 @@ trait MysqlClient {
 
   def createCategoriesTables()(implicit client: Client): Future[Result] = {
     client.query(DDL.createCategoriesTable).onSuccess { _ =>
-      log.info("[INFO] Create Categories table")
+      log.info("Create Categories table")
     }
   }
 
