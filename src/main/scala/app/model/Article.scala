@@ -36,7 +36,10 @@ object Article {
   }
 
   def findAll(orgId: Int, limit: Int = 100, offset: Int = 0)(implicit client: Client): Future[Seq[Article]] = {
-    val sql = s"SELECT * FROM articles a WHERE a.del_flg = 0 AND a.organization_id = $orgId ORDER BY a.id DESC LIMIT $offset, $limit"
+    select(s"SELECT * FROM articles a WHERE a.del_flg = 0 AND a.organization_id = $orgId ORDER BY a.id DESC LIMIT $offset, $limit")
+  }
+
+  def select(sql: String)(implicit client: Client): Future[Seq[Article]] = {
     client.select(sql) { row =>
       val LongValue(id) = row("id").get
       val published = getStringValue(row, "published")

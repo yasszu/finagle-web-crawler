@@ -23,9 +23,7 @@ class GoogleBlogRepository(client: GoogleBlogClient) {
 
   private def getFromRemote(response: Future[Response], org: Organization): Future[Seq[Article]] = {
     response map { rep =>
-      parseArticles(rep.getContentString(), org.id) map {
-        case (article, _) => article
-      }
+      parseArticles(rep.getContentString(), org.id) map { case (article, _) => article }
     }
   }
 

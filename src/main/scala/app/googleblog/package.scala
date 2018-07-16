@@ -23,4 +23,13 @@ package object googleblog {
     }
   }
 
+  implicit def articlesFilter(articles: Seq[(Article, Seq[String])]) = new {
+    def filterLatest(latestArticle: Option[Article]): Seq[(Article, Seq[String])] = {
+      latestArticle match {
+        case None => articles
+        case Some(latest) => articles filter { case (article, _) => article biggerThan latest }
+      }
+    }
+  }
+
 }

@@ -35,19 +35,14 @@ class GoogleBlogService(client: GoogleBlogClient) {
 
   private def scrape(response: Future[Response], org: Organization)(implicit mysql: Client): Future[Unit] = {
     response map { res =>
-      val articles = parseArticles(res.getContentString(), org.id)
-      log.info(s"[GoogleBlogClient] Fetch ${articles.size} articles")
-      articles.reverseMap { case (article, categories) => saveArticle(org, article, categories) }
+      val articles = parseArticles(res.getContentString(), org.id).filterLatest(getLatestArticle(org))
+      articles.reverseMap { case (article, categories) => saveArticle(article, categories) }
+      log.info(s"[${org.name}] Fetch ${articles.size}\tarticles")
     }
   }
 
-  private def saveArticle(org: Organization, article: Article, categories: Seq[String])(implicit mysql: Client): Unit = {
-    getLatestArticle(org) match {
-      case None => createArticle(article) map { id => createCategories(id, categories) }
-      case Some(latest) if article biggerThan latest  =>
-        createArticle(article) map { id => createCategories(id, categories)}
-      case _ => Unit
-    }
+  private def saveArticle(article: Article, categories: Seq[String])(implicit mysql: Client): Unit = {
+    createArticle(article) map { id => createCategories(id, categories) }
   }
 
   private def createArticle(article: Article)(implicit mysql: Client): Future[Long] = {
@@ -61,6 +56,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
   }
 
   private def getLatestArticle(organization: Organization)(implicit mysql: Client): Option[Article] = {
+    // todo fix get Latest one
     Await.result(Article.findAll(organization.id, 1)).headOption
   }
 
