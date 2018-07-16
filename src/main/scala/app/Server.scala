@@ -9,6 +9,7 @@ import com.twitter.finagle.Http
 import com.twitter.server.TwitterServer
 import com.twitter.util.{Await, Future}
 import app.util._
+import com.twitter.app.Flag
 import com.typesafe.config.{Config, ConfigFactory}
 import io.circe.generic.auto._
 import io.finch.circe._
@@ -21,11 +22,14 @@ object Server extends TwitterServer with MysqlClient {
   override def failfastOnFlagsNotParsed: Boolean = true
 
   val conf: Config = ConfigFactory.load()
-  val user: String = conf.getString("mysql.user")
-  val password: String = conf.getString("mysql.password")
-  val db: String = conf.getString("mysql.db")
-  val host: String = conf.getString("mysql.host")
-  val port: Int = conf.getInt("mysql.port")
+  val dockerHost: String = conf.getString("mysql.host")
+  val dbHost: Flag[String] = flag("db.host", dockerHost, "Mysql server address")
+
+  override def host: String = dbHost()
+  override def db: String = conf.getString("mysql.db")
+  override def port: Int = conf.getInt("mysql.port")
+  override def user: String = conf.getString("mysql.user")
+  override def password: String = conf.getString("mysql.password")
 
   implicit val timeout: Timeout = Timeout(180 seconds)
 
@@ -54,6 +58,7 @@ object Server extends TwitterServer with MysqlClient {
   }
 
   def main() {
+    log.info(s"db.host: ${dbHost()}")
     log.info("Listening for HTTP on /0.0.0.0:8080")
     for {
       _ <- createArticlesTables()

@@ -13,11 +13,11 @@ import com.twitter.util.Future
   */
 trait MysqlClient {
 
-  val host: String
-  val port: Int
-  val user: String
-  val password: String
-  val db: String
+  def host: String
+  def port: Int
+  def user: String
+  def password: String
+  def db: String
 
   lazy val addr: InetSocketAddress = new InetSocketAddress(host, port)
 
