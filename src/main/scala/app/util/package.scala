@@ -7,18 +7,6 @@ import com.twitter.logging.Logger
   */
 package object util {
 
-  val log = Logger.get(getClass)
-
-  /**
-    * Parse date format
-    *
-    * @param source 'yyyy-MM-dd'T'HH:mm:ss'
-    * @return yyyMMdd
-    */
-  def parseDateFormat(source: String): Int = {
-    val format = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-    val date = format.parse(source)
-    new java.text.SimpleDateFormat("yyyyMMdd").format(date).toInt
-  }
+  val log: Logger = Logger.get(getClass)
 
 }

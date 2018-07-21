@@ -38,7 +38,8 @@ lazy val dependencies = Seq(
   "io.circe" %% "circe-parser" % "0.9.0-M2",
   "com.typesafe" % "config" % "1.3.1",
   "com.typesafe.akka" %% "akka-actor" % "2.5.10",
-  "com.typesafe.akka" %% "akka-testkit" % "2.5.10" % Test
+  "com.typesafe.akka" %% "akka-testkit" % "2.5.10" % Test,
+  "joda-time" % "joda-time" % "2.10"
 )
 
 lazy val root = (project in file("."))

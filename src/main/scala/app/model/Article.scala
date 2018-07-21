@@ -1,9 +1,8 @@
 package app.model
 
-import com.twitter.finagle.mysql.Client
-import com.twitter.finagle.mysql._
+import app.util.DateUtil._
+import com.twitter.finagle.mysql.{Client, _}
 import com.twitter.util.Future
-import app.util._
 
 case class Article(
     id: Option[Long],
@@ -16,9 +15,9 @@ case class Article(
 ) {
 
   def biggerThan(that: Article): Boolean = {
-    val latestDate = parseDateFormat(published)
-    val targetDate = parseDateFormat(that.published)
-    targetDate > latestDate
+    val target = convertToTimestamp(that.published)
+    val self = convertToTimestamp(this.published)
+    self after target
   }
 
 }
@@ -28,7 +27,8 @@ object Article {
   def insert(article: Article)(implicit client: Client): Future[Long] = {
     val sql = "INSERT INTO articles (published, title, content, thumbnail, link, organization_id) VALUES (?, ?, ?, ?, ?, ?)"
     val ps = client.prepare(sql)
-    ps(article.published, article.title, article.content, article.thumbnail, article.link, article.organization_id) map { result =>
+    val published = convertToMysqlFormat(article.published)
+    ps(published, article.title, article.content, article.thumbnail, article.link, article.organization_id) map { result =>
       result.asInstanceOf[OK].insertId
     } onFailure { throwable =>
       throwable.printStackTrace()
@@ -36,7 +36,7 @@ object Article {
   }
 
   def findAll(orgId: Int, limit: Int = 100, offset: Int = 0)(implicit client: Client): Future[Seq[Article]] = {
-    select(s"SELECT * FROM articles a WHERE a.del_flg = 0 AND a.organization_id = $orgId ORDER BY a.id DESC LIMIT $offset, $limit")
+    select(s"SELECT * FROM articles a WHERE a.del_flg = 0 AND a.organization_id = $orgId ORDER BY a.published DESC LIMIT $offset, $limit")
   }
 
   def select(sql: String)(implicit client: Client): Future[Seq[Article]] = {

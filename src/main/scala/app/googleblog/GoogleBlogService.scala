@@ -18,26 +18,34 @@ class GoogleBlogService(client: GoogleBlogClient) {
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape developers blog")
     val response = client.request(GetGoogleDevelopersBlog)
-    scrape(response, GoogleDevelopersBlog)
+    scrape(response, GoogleDevelopersBlog).handle {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def scrapeDevelopersJapan()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape developers japan")
     val response = client.request(GetGoogleDevelopersJapan)
-    scrape(response, GoogleDevelopersJapan)
+    scrape(response, GoogleDevelopersJapan).handle {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def scrapeAndroidDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape android developers blog")
     val response = client.request(GetAndroidDevelopersBlog)
-    scrape(response, AndroidDevelopersBlog)
+    scrape(response, AndroidDevelopersBlog).handle {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   private def scrape(response: Future[Response], org: Organization)(implicit mysql: Client): Future[Unit] = {
     response map { res =>
-      val articles = parseArticles(res.getContentString(), org.id).filterLatest(getLatestArticle(org))
-      articles.reverseMap { case (article, categories) => saveArticle(article, categories) }
-      log.info(s"[${org.name}] Fetch ${articles.size}\tarticles")
+      val articles = parseArticles(res.getContentString(), org.id)
+      val latestArticles = articles.filterLatest(getLatestArticle(org))
+      latestArticles.reverseMap { case (article, categories) => saveArticle(article, categories) }
+      log.info(s"[${org.name}] Fetch ${articles.size} articles")
+      log.info(s"[${org.name}] Save  ${latestArticles.size} articles")
     }
   }
 
@@ -56,7 +64,6 @@ class GoogleBlogService(client: GoogleBlogClient) {
   }
 
   private def getLatestArticle(organization: Organization)(implicit mysql: Client): Option[Article] = {
-    // todo fix get Latest one
     Await.result(Article.findAll(organization.id, 1)).headOption
   }
 
