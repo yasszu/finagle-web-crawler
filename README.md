@@ -44,7 +44,7 @@ $ sbt assembly
 * Run process
 
 ```
-$ java -jar target/scala-2.12/finagle-web-crawler-assembly-1.0.jar &
+$ java -jar target/scala-2.12/finagle-web-crawler-assembly-1.0-SNAPSHOT.jar -db.host='localhost'
 ```
 
 * Refs  
