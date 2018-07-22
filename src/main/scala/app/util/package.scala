@@ -7,6 +7,6 @@ import com.twitter.logging.Logger
   */
 package object util {
 
-  val log = Logger.get(getClass)
+  val log: Logger = Logger.get(getClass)
 
 }

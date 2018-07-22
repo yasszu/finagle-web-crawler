@@ -1,7 +1,7 @@
 package app.api
 
 import app.api.GoogleBlogApi.Page
-import app.googleblog.{GoogleBlogClient, GoogleBlogService}
+import app.googleblog.{GoogleBlogClient, GoogleBlogRepository, GoogleBlogService}
 import app.model._
 import app.util._
 import com.twitter.finagle.mysql.Client
@@ -17,13 +17,17 @@ class GoogleBlogApi()(implicit mysql: Client) {
 
   val googleBlogService = GoogleBlogService()
 
+  val repository = GoogleBlogRepository()
+
   val page: Endpoint[Page] = (param("page").as[Int] :: param("count").as[Int]).as[Page]
+
+  val index: Endpoint[String] = get(/) { Ok("https://github.com/yasszu/finagle-web-crawler") }
 
   /**
     * GET feed/googleblog/developers
     */
   val getDevelopersBlog: Endpoint[Seq[Article]] = get("feed" :: "googleblog" :: "developers") {
-    googleBlogService.getDevelopersBlogFromRemote map { articles =>
+    repository.getDevelopersBlogFromRemote map { articles =>
       articles.foreach(a => log.info(a.title + ","))
       Ok(articles)
     }
@@ -35,7 +39,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET feed/googleblog/developers_jp
     */
   val getDevelopersJapan: Endpoint[Seq[Article]] = get("feed" :: "googleblog" :: "developers_jp") {
-    googleBlogService.getDevelopersBlogJapanFormRemote map { articles =>
+    repository.getDevelopersBlogJapanFormRemote map { articles =>
       articles.foreach(a => log.info(a.title + ","))
       Ok(articles)
     }
@@ -47,7 +51,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET api/googleblog/developers
     */
   val getDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "googleblog" :: "developers" :: page) { p: Page =>
-    googleBlogService.getArticlesFromDB(GoogleDevelopersBlog, p.count, p.page) map { articles =>
+    repository.getArticlesFromDB(GoogleDevelopersBlog, p.count, p.page) map { articles =>
       log.info(s"[API] GET api/googleblog/developers: ${articles.size} articles")
       Ok(articles)
     }
@@ -59,7 +63,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET api/googleblog/developers_jp
     */
   val getDevelopersJapanFormDb: Endpoint[Seq[Article]] = get("api" :: "googleblog" :: "developers_jp" :: page) { p: Page =>
-    googleBlogService.getArticlesFromDB(GoogleDevelopersJapan, p.count, p.page) map { articles =>
+    repository.getArticlesFromDB(GoogleDevelopersJapan, p.count, p.page) map { articles =>
       log.info(s"[API] GET api/googleblog/developers_jp: ${articles.size} articles")
       Ok(articles)
     }
@@ -71,7 +75,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     * GET api/developers/android
     */
   val getAndroidDevelopersBlogFormDb: Endpoint[Seq[Article]] = get("api" :: "developers" :: "android" :: page) { p: Page =>
-    googleBlogService.getArticlesFromDB(AndroidDevelopersBlog, p.count, p.page) map { articles =>
+    repository.getArticlesFromDB(AndroidDevelopersBlog, p.count, p.page) map { articles =>
       log.info(s"[API] GET api/developers/android: ${articles.size} articles")
       Ok(articles)
     }
@@ -112,7 +116,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     case e: Exception => InternalServerError(e)
   }
 
-  val endpoints = getDevelopersBlog :+: getDevelopersJapan :+: scrapeDevelopersBlog :+: scrapeDevelopersJapan :+:
+  val endpoints = index :+: getDevelopersBlog :+: getDevelopersJapan :+: scrapeDevelopersBlog :+: scrapeDevelopersJapan :+:
     getDevelopersBlogFormDb :+: getDevelopersJapanFormDb :+: scrapeAndroidDevelopersBlog :+: getAndroidDevelopersBlogFormDb
 
 }

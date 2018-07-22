@@ -5,7 +5,7 @@ object DDL {
   val createArticlesTable =
     """CREATE TABLE IF NOT EXISTS `articles` (
          `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
-         `published` VARCHAR(45) NOT NULL,
+         `published` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
          `title` TEXT NOT NULL,
          `content` TEXT NOT NULL,
          `thumbnail` VARCHAR(255) NOT NULL,

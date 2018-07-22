@@ -9,18 +9,6 @@ import scala.xml._
   */
 package object googleblog {
 
-  /**
-    * Parse date format
-    *
-    * @param source 'yyyy-MM-dd'T'HH:mm:ss'
-    * @return yyyMMdd
-    */
-  def parseDateFormat(source: String): Int = {
-    val format = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-    val date = format.parse(source)
-    new java.text.SimpleDateFormat("yyyyMMdd").format(date).toInt
-  }
-
   def parseArticles(xmlString: String, organizationId: Int): Seq[(Article, Seq[String])] = {
     val entry = XML.loadString(xmlString) \\ "entry"
     entry map { entry =>
@@ -32,6 +20,15 @@ package object googleblog {
       val originalUrl = (entry \ "origLink").text
       val article = Article(None, published, title, content, thumbnail, originalUrl, organizationId)
       (article, categories)
+    }
+  }
+
+  implicit class articlesFilter(val articles: Seq[(Article, Seq[String])]) {
+    def filterLatest(latestArticle: Option[Article]): Seq[(Article, Seq[String])] = {
+      latestArticle match {
+        case None => articles
+        case Some(latest) => articles filter { case (article, _) => article biggerThan latest}
+      }
     }
   }
 

@@ -15,78 +15,42 @@ import com.twitter.util.{Await, Future}
   */
 class GoogleBlogService(client: GoogleBlogClient) {
 
-  def getDevelopersBlogFromRemote: Future[Seq[Article]] = {
-    val response = client.request(GetGoogleDevelopersBlog)
-    getFromRemote(response, GoogleDevelopersBlog)
-  }
-
-  def getDevelopersBlogJapanFormRemote: Future[Seq[Article]] = {
-    val response = client.request(GetGoogleDevelopersJapan)
-    getFromRemote(response, GoogleDevelopersJapan)
-  }
-
-  private def getFromRemote(response: Future[Response], org: Organization): Future[Seq[Article]] = {
-    response map { rep =>
-      val source = rep.getContentString()
-      parseArticles(source, org.id) map {
-        case (article, categories) => article
-      }
-    }
-  }
-
-  def getArticlesFromDB(org: Organization, limit: Int = 100, offset: Int = 0)(implicit mysql: Client): Future[Seq[Article]] = {
-    Article.findAll(org.id, limit, offset)
-  }
-
   def scrapeDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape developers blog")
     val response = client.request(GetGoogleDevelopersBlog)
-    scrape(response, GoogleDevelopersBlog)
+    scrape(response, GoogleDevelopersBlog).handle {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def scrapeDevelopersJapan()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape developers japan")
     val response = client.request(GetGoogleDevelopersJapan)
-    scrape(response, GoogleDevelopersJapan)
+    scrape(response, GoogleDevelopersJapan).handle {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   def scrapeAndroidDevelopersBlog()(implicit mysql: Client): Future[Unit] = {
     log.info("Scrape android developers blog")
     val response = client.request(GetAndroidDevelopersBlog)
-    scrape(response, AndroidDevelopersBlog)
+    scrape(response, AndroidDevelopersBlog).handle {
+      case e: Exception => e.printStackTrace()
+    }
   }
 
   private def scrape(response: Future[Response], org: Organization)(implicit mysql: Client): Future[Unit] = {
     response map { res =>
-      val source = res.getContentString()
-      val articles = parseArticles(source, org.id)
-      log.info(s"[GoogleBlogClient] Fetch ${articles.size} articles")
-      articles.reverseMap {
-        case (article, categories) =>
-          saveArticle(org, article, categories)
-      }
+      val articles = parseArticles(res.getContentString(), org.id)
+      val latestArticles = articles.filterLatest(getLatestArticle(org))
+      latestArticles.reverseMap { case (article, categories) => saveArticle(article, categories) }
+      log.info(s"[${org.name}] Fetch ${articles.size} articles")
+      log.info(s"[${org.name}] Save  ${latestArticles.size} articles")
     }
   }
 
-  private def saveArticle(org: Organization, article: Article, categories: Seq[String])(implicit mysql: Client): Unit = {
-    getLatestArticle(org) match {
-      case None =>
-        createArticle(article) map { id =>
-          createCategories(id, categories)
-        }
-      case Some(latest) =>
-        if (compare(article, latest)) {
-          createArticle(article) map { id =>
-            createCategories(id, categories)
-          }
-        }
-    }
-  }
-
-  private def compare(target: Article, latest: Article): Boolean = {
-    val latestDate = parseDateFormat(latest.published)
-    val targetDate = parseDateFormat(target.published)
-    targetDate > latestDate
+  private def saveArticle(article: Article, categories: Seq[String])(implicit mysql: Client): Unit = {
+    createArticle(article) map { id => createCategories(id, categories) }
   }
 
   private def createArticle(article: Article)(implicit mysql: Client): Future[Long] = {
@@ -96,9 +60,7 @@ class GoogleBlogService(client: GoogleBlogClient) {
   }
 
   private def createCategories(id: Long, terms: Seq[String])(implicit mysql: Client): Unit = {
-    terms.map { term =>
-      Category.insert(Category(None, id, term))
-    }
+    terms map { term => Category.insert(Category(None, id, term)) }
   }
 
   private def getLatestArticle(organization: Organization)(implicit mysql: Client): Option[Article] = {
