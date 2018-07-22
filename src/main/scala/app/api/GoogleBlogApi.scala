@@ -21,6 +21,8 @@ class GoogleBlogApi()(implicit mysql: Client) {
 
   val page: Endpoint[Page] = (param("page").as[Int] :: param("count").as[Int]).as[Page]
 
+  val index: Endpoint[String] = get(/) { Ok("https://github.com/yasszu/finagle-web-crawler") }
+
   /**
     * GET feed/googleblog/developers
     */
@@ -114,7 +116,7 @@ class GoogleBlogApi()(implicit mysql: Client) {
     case e: Exception => InternalServerError(e)
   }
 
-  val endpoints = getDevelopersBlog :+: getDevelopersJapan :+: scrapeDevelopersBlog :+: scrapeDevelopersJapan :+:
+  val endpoints = index :+: getDevelopersBlog :+: getDevelopersJapan :+: scrapeDevelopersBlog :+: scrapeDevelopersJapan :+:
     getDevelopersBlogFormDb :+: getDevelopersJapanFormDb :+: scrapeAndroidDevelopersBlog :+: getAndroidDevelopersBlogFormDb
 
 }
