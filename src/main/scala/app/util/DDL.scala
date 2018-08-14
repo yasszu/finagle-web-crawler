@@ -12,8 +12,8 @@ object DDL {
          `link` VARCHAR(255) NOT NULL,
          `organization_id` BIGINT(20) NOT NULL,
          `del_flg` tinyint(4) NOT NULL DEFAULT '0',
-         `create_date` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-         `update_date` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+         `create_date` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP,
+         `update_date` TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
          PRIMARY KEY (`id`),
          UNIQUE INDEX `id_UNIQUE` (`id` ASC),
          INDEX `organization_id_idx` (`organization_id` ASC))
