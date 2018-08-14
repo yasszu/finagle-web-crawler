@@ -8,6 +8,13 @@ Scrape below blogs:
 * Install Docker Compose    
 https://docs.docker.com/compose/install/
 
+* Create DB schema
+```sql
+CREATE DATABASE IF NOT EXISTS `crawler` 
+DEFAULT CHARACTER SET = utf8mb4
+COLLATE utf8mb4_unicode_ci;
+```
+
 ## Run application
 
 ```
